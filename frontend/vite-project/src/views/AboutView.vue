@@ -7,6 +7,7 @@ import BrandsSection from '../components/BrandsSection.vue'
 import InstagramSection from '../components/InstagramSection.vue'
 
 const aboutData = ref<any>(null)
+const isVideoPlaying = ref(false)
 
 onMounted(async () => {
   try {
@@ -34,10 +35,13 @@ onMounted(async () => {
     <!-- Promo / Video Section -->
     <section v-if="aboutData" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
       <div class="w-full">
-        <div class="bg-gray-200 w-full aspect-[4/3] flex justify-center items-center relative rounded" :style="`background-image: url('${aboutData.promoImage}'); background-size: cover; background-position: center;`">
-            <div class="w-16 h-16 bg-white rounded-full flex justify-center items-center shadow-lg text-gray-800 cursor-pointer hover:scale-110 hover:text-secondary transition-all">
+        <div v-if="!isVideoPlaying" class="bg-gray-200 w-full aspect-[4/3] flex justify-center items-center relative rounded overflow-hidden" :style="`background-image: url('${aboutData.promoImage}'); background-size: cover; background-position: center;`">
+            <div @click="isVideoPlaying = true" class="w-16 h-16 bg-white rounded-full flex justify-center items-center shadow-lg text-gray-800 cursor-pointer hover:scale-110 hover:text-secondary transition-all">
                 <svg class="w-6 h-6 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
             </div>
+        </div>
+        <div v-else class="w-full aspect-[4/3] relative rounded overflow-hidden shadow-lg bg-black">
+            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/jwmS1gc9S5A?autoplay=1&mute=1" title="Product Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
       </div>
       <div>

@@ -85,7 +85,7 @@ onMounted(async () => {
           <!-- Product Card -->
           <div v-for="product in bestSelling" :key="product._id" class="border border-gray-100 p-6 rounded flex flex-col items-center group cursor-pointer hover:shadow-md transition-shadow bg-white text-center">
             <div class="w-full aspect-square bg-cover bg-center mix-blend-multiply mb-4" :style="`background-image: url('${product.image || '/blog.png'}')`"></div>
-            <h4 class="text-sm font-medium text-gray-800 group-hover:text-black mb-1">{{ product.name }}</h4>
+            <h4 class="text-sm font-medium text-gray-800 group-hover:text-secondary mb-1">{{ product.name }}</h4>
             <span class="text-secondary font-semibold">${{ product.price }}</span>
           </div>
         </div>

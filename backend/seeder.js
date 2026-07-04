@@ -73,10 +73,9 @@ const importData = async () => {
     ];
 
     const productsWithImages = baseProducts.map((p, index) => {
-      const keyword = encodeURIComponent(p.name.split(' ')[0].toLowerCase());
       return {
         ...p,
-        image: `https://loremflickr.com/500/500/technology,gadget,${keyword}?lock=${index + 1}`
+        image: `https://picsum.photos/seed/${index + 100}/500/500`
       };
     });
 
