@@ -1,0 +1,114 @@
+const express = require('express');
+const Order = require('../models/Order');
+const Product = require('../models/Product');
+const { protect, authorize } = require('../middleware/auth');
+const router = express.Router();
+
+// POST place order (Protected - Customer only or any authenticated user)
+router.post('/', protect, async (req, res) => {
+  try {
+    const { items, shippingAddress, paymentMethod } = req.body;
+    if (!items || !items.length || !shippingAddress) {
+      return res.status(400).json({ message: 'Order items and shipping address are required' });
+    }
+
+    let totalAmount = 0;
+    const orderItems = [];
+
+    // Calculate total price and verify products
+    for (const item of items) {
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        return res.status(404).json({ message: `Product ${item.productId} not found` });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ message: `Insufficient stock for product: ${product.title}` });
+      }
+
+      // Deduct stock
+      product.stock -= item.quantity;
+      product.sales += item.quantity;
+      await product.save();
+
+      totalAmount += product.price * item.quantity;
+      orderItems.push({
+        product: product._id,
+        quantity: item.quantity,
+        price: product.price,
+      });
+    }
+
+    const order = new Order({
+      user: req.user._id,
+      items: orderItems,
+      totalAmount,
+      shippingAddress,
+      paymentMethod: paymentMethod || 'cod',
+    });
+
+    await order.save();
+    
+    // Populate product details in returned order
+    const populatedOrder = await Order.findById(order._id)
+      .populate('items.product')
+      .populate('user', 'name email');
+
+    res.status(201).json(populatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+});
+
+// GET all orders (Admin only)
+router.get('/', protect, authorize('Admin'), async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .populate('items.product')
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+});
+
+// GET user's own orders (Protected)
+router.get('/my-orders', protect, async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user._id })
+      .populate('items.product')
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+});
+
+// PUT update order status (Admin only)
+router.put('/:id/status', protect, authorize('Admin'), async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['Pending', 'Dispatched', 'Delivered', 'Cancelled'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    order.status = status;
+    await order.save();
+    
+    const populated = await Order.findById(order._id)
+      .populate('items.product')
+      .populate('user', 'name email');
+
+    res.json(populated);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+});
+
+module.exports = router;

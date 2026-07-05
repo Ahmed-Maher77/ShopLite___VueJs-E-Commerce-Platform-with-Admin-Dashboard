@@ -26,6 +26,18 @@ const userSchema = new mongoose.Schema(
     address: {
       type: String,
     },
+    isRestricted: {
+      type: Boolean,
+      default: false,
+    },
+    isApproved: {
+      type: Boolean,
+      default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -16,10 +16,12 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-// app.use('/api/auth', require('./src/routes/auth'));
-// app.use('/api/users', require('./src/routes/users'));
+app.use('/api/auth', require('./src/routes/auth'));
+app.use('/api/users', require('./src/routes/users'));
 app.use('/api/categories', require('./src/routes/categories'));
 app.use('/api/products', require('./src/routes/products'));
+app.use('/api/orders', require('./src/routes/orders'));
+app.use('/api/coupons', require('./src/routes/coupons'));
 app.use('/api/reviews', require('./src/routes/reviews'));
 app.use('/api/home', require('./src/routes/home'));
 app.use('/api/about', require('./src/routes/about'));

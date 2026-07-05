@@ -20,6 +20,29 @@ const product = ref<any>(null)
 const loading = ref(true)
 const errorMsg = ref('')
 
+// Cart states
+import { useCart } from '../composables/useCart'
+const { addToCart } = useCart()
+const cartSuccessMsg = ref('')
+const cartErrorMsg = ref('')
+const quantity = ref(1)
+
+const handleAddToCart = () => {
+  cartSuccessMsg.value = ''
+  cartErrorMsg.value = ''
+  try {
+    addToCart(product.value, quantity.value)
+    cartSuccessMsg.value = 'Product added to cart successfully!'
+    // Automatically clear success message after 3 seconds
+    setTimeout(() => {
+      cartSuccessMsg.value = ''
+    }, 4000)
+  } catch (err: any) {
+    cartErrorMsg.value = err.message || 'Failed to add product to cart.'
+    // If not authenticated, we keep it visible or add a login button
+  }
+}
+
 // Image gallery state
 const activeImageIndex = ref(0)
 
@@ -325,10 +348,42 @@ onMounted(() => {
                 </span>
               </div>
 
+              <!-- Success or Error alerts -->
+              <div v-if="cartSuccessMsg" class="mb-4 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded text-left flex items-center justify-between">
+                <span class="text-sm text-emerald-800 font-medium">{{ cartSuccessMsg }}</span>
+                <router-link to="/cart" class="text-xs font-bold text-emerald-600 underline hover:text-emerald-700">View Cart</router-link>
+              </div>
+
+              <div v-if="cartErrorMsg" class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded text-left">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-red-800 font-medium">{{ cartErrorMsg }}</span>
+                  <button @click="cartErrorMsg = ''" class="text-xs text-red-500 font-bold hover:underline">Dismiss</button>
+                </div>
+                <div v-if="cartErrorMsg.toLowerCase().includes('login')" class="mt-3">
+                  <router-link :to="`/login?redirect=${route.fullPath}`" class="inline-flex items-center justify-center bg-red-600 text-white font-semibold text-xs py-1.5 px-4 rounded shadow hover:bg-red-700 transition-colors uppercase">
+                    Login to your account
+                  </router-link>
+                </div>
+              </div>
+
               <!-- Quick Action Button -->
-              <div>
+              <div class="flex items-center gap-4">
+                <!-- Quantity selector -->
+                <div v-if="product.stock > 0" class="flex items-center border border-gray-200 rounded">
+                  <button 
+                    @click="quantity = Math.max(1, quantity - 1)" 
+                    class="px-3 py-3 text-gray-500 hover:text-secondary font-bold text-sm"
+                  >-</button>
+                  <span class="px-3 text-sm font-semibold text-gray-800">{{ quantity }}</span>
+                  <button 
+                    @click="quantity = Math.min(product.stock, quantity + 1)" 
+                    class="px-3 py-3 text-gray-500 hover:text-secondary font-bold text-sm"
+                  >+</button>
+                </div>
+
                 <button 
-                  class="w-full sm:w-auto bg-secondary text-white font-bold text-sm tracking-wide py-4 px-10 rounded shadow-md hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 uppercase cursor-pointer"
+                  @click="handleAddToCart"
+                  class="flex-1 sm:flex-initial bg-secondary text-white font-bold text-sm tracking-wide py-4 px-10 rounded shadow-md hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 uppercase cursor-pointer"
                   :disabled="product.stock === 0"
                   :class="product.stock === 0 ? 'opacity-50 cursor-not-allowed bg-gray-500' : ''"
                 >

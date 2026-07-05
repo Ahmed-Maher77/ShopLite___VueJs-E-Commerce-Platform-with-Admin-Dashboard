@@ -1,5 +1,6 @@
 const express = require('express');
 const ProductController = require('../controllers/ProductController');
+const { protect, authorize } = require('../middleware/auth');
 const router = express.Router();
 
 // GET products (supports search, pagination, combined filtering, sorting)
@@ -12,12 +13,12 @@ router.get('/brands', ProductController.getDistinctBrands);
 router.get('/:id', ProductController.getProductById);
 
 // POST create product (Admin feature prep)
-router.post('/', ProductController.createProduct);
+router.post('/', protect, authorize('Admin'), ProductController.createProduct);
 
 // PUT update product by ID (Admin feature prep)
-router.put('/:id', ProductController.updateProduct);
+router.put('/:id', protect, authorize('Admin'), ProductController.updateProduct);
 
 // DELETE product by ID (Admin feature prep)
-router.delete('/:id', ProductController.deleteProduct);
+router.delete('/:id', protect, authorize('Admin'), ProductController.deleteProduct);
 
 module.exports = router;

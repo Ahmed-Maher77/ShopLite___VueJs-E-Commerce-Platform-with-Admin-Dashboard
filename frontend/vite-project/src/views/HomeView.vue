@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import FeaturesSection from '../components/FeaturesSection.vue'
 import ReviewsSection from '../components/ReviewsSection.vue'
-import LatestPostsSection from '../components/LatestPostsSection.vue'
 import BrandsSection from '../components/BrandsSection.vue'
-import InstagramSection from '../components/InstagramSection.vue'
+
+const router = useRouter()
 
 const categories = ref<any[]>([])
 const bestSelling = ref<any[]>([])
@@ -40,7 +41,7 @@ onMounted(async () => {
         <div class="w-full md:w-1/2 md:pl-16 mb-10 md:mb-0">
           <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-gray-900 mb-4 leading-tight">GOPRO HERO9 BLACK</h1>
           <p class="text-gray-500 mb-8 text-sm max-w-sm">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
-          <button class="bg-secondary text-white font-medium tracking-wide py-3 px-10 text-sm rounded-full shadow-sm hover:opacity-90 transition-opacity">SHOP NOW</button>
+          <button @click="router.push('/shop')" class="bg-secondary text-white font-medium tracking-wide py-3 px-10 text-sm rounded-full shadow-sm hover:opacity-90 transition-opacity cursor-pointer">SHOP NOW</button>
         </div>
         
         <div class="w-full md:w-1/2 flex justify-center md:justify-end relative">
@@ -56,22 +57,7 @@ onMounted(async () => {
     <!-- Features Section -->
     <FeaturesSection />
 
-    <!-- Categories Section -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-      <div class="flex items-center gap-5 mb-10">
-        <h2 class="text-xl font-medium tracking-wide whitespace-nowrap text-gray-900">CATEGORIES</h2>
-        <div class="h-2 flex-grow bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4=')] opacity-50"></div>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 text-center">
-        <!-- Category items -->
-        <div v-for="category in categories" :key="category._id" class="group cursor-pointer">
-          <div class="bg-gray-50 aspect-square rounded flex items-center justify-center mb-4 transition-transform group-hover:-translate-y-2">
-            <div class="w-16 h-16 bg-[url('/blog.png')] bg-cover bg-center mix-blend-multiply opacity-80"></div>
-          </div>
-          <h4 class="text-sm font-medium text-gray-700 group-hover:text-secondary transition-colors">{{ category.name }}</h4>
-        </div>
-      </div>
-    </section>
+
 
     <!-- Best Selling Items Section -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
@@ -83,9 +69,14 @@ onMounted(async () => {
         <button class="bg-white border border-gray-200 w-10 h-10 flex justify-center items-center cursor-pointer text-gray-400 hover:text-gray-800 hover:border-gray-800 transition-colors shrink-0 rounded-full shadow-sm">&lt;</button>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 flex-grow">
           <!-- Product Card -->
-          <div v-for="product in bestSelling" :key="product._id" class="border border-gray-100 p-6 rounded flex flex-col items-center group cursor-pointer hover:shadow-md transition-shadow bg-white text-center">
-            <div class="w-full aspect-square bg-cover bg-center mix-blend-multiply mb-4" :style="`background-image: url('${product.image || '/blog.png'}')`"></div>
-            <h4 class="text-sm font-medium text-gray-800 group-hover:text-secondary mb-1">{{ product.name }}</h4>
+          <div 
+            v-for="product in bestSelling" 
+            :key="product._id" 
+            @click="router.push('/products/' + product._id)"
+            class="border border-gray-100 p-6 rounded flex flex-col items-center group cursor-pointer hover:shadow-md transition-shadow bg-white text-center"
+          >
+            <div class="w-full aspect-square bg-contain bg-center bg-no-repeat mix-blend-multiply mb-4" :style="`background-image: url('${product.thumbnail || product.image || '/blog.png'}')`"></div>
+            <h4 class="text-sm font-medium text-gray-800 group-hover:text-secondary mb-1 line-clamp-2 h-10">{{ product.title || product.name }}</h4>
             <span class="text-secondary font-semibold">${{ product.price }}</span>
           </div>
         </div>
@@ -120,7 +111,7 @@ onMounted(async () => {
           </div>
           
           <div>
-            <button class="bg-secondary text-white font-medium tracking-wide py-3 px-8 text-sm rounded shadow-sm hover:opacity-90 transition-opacity">SHOP COLLECTION</button>
+            <button @click="router.push('/shop')" class="bg-secondary text-white font-medium tracking-wide py-3 px-8 text-sm rounded shadow-sm hover:opacity-90 transition-opacity cursor-pointer">SHOP COLLECTION</button>
           </div>
         </div>
       </div>
@@ -134,11 +125,16 @@ onMounted(async () => {
         <div>
           <h3 class="text-base font-semibold tracking-wide mb-6 text-gray-900 uppercase">FEATURED</h3>
           <div class="space-y-4">
-            <div v-for="product in featuredItems" :key="product._id" class="flex items-center gap-4 group cursor-pointer">
-              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-cover bg-center" :style="`background-image: url('${product.image || '/blog.png'}')`"></div>
+            <div 
+              v-for="product in featuredItems" 
+              :key="product._id" 
+              @click="router.push('/products/' + product._id)"
+              class="flex items-center gap-4 group cursor-pointer"
+            >
+              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-contain bg-center bg-no-repeat mix-blend-multiply" :style="`background-image: url('${product.thumbnail || product.image || '/blog.png'}')`"></div>
               <div>
-                <h4 class="text-sm font-medium text-gray-800 group-hover:text-secondary transition-colors">{{ product.name }}</h4>
-                <div class="text-secondary text-sm font-semibold">${{ product.price }}</div>
+                <h4 class="text-sm font-bold text-gray-800 group-hover:text-secondary transition-colors line-clamp-1" :title="product.title || product.name">{{ product.title || product.name }}</h4>
+                <div class="text-secondary text-sm font-semibold">${{ product.price.toFixed(2) }}</div>
               </div>
             </div>
           </div>
@@ -148,11 +144,16 @@ onMounted(async () => {
         <div>
           <h3 class="text-base font-semibold tracking-wide mb-6 text-gray-900 uppercase">LATEST ITEMS</h3>
           <div class="space-y-4">
-            <div v-for="product in latestItems" :key="product._id" class="flex items-center gap-4 group cursor-pointer">
-              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-cover bg-center" :style="`background-image: url('${product.image || '/blog.png'}')`"></div>
+            <div 
+              v-for="product in latestItems" 
+              :key="product._id" 
+              @click="router.push('/products/' + product._id)"
+              class="flex items-center gap-4 group cursor-pointer"
+            >
+              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-contain bg-center bg-no-repeat mix-blend-multiply" :style="`background-image: url('${product.thumbnail || product.image || '/blog.png'}')`"></div>
               <div>
-                <h4 class="text-sm font-medium text-gray-800 group-hover:text-secondary transition-colors">{{ product.name }}</h4>
-                <div class="text-secondary text-sm font-semibold">${{ product.price }}</div>
+                <h4 class="text-sm font-bold text-gray-800 group-hover:text-secondary transition-colors line-clamp-1" :title="product.title || product.name">{{ product.title || product.name }}</h4>
+                <div class="text-secondary text-sm font-semibold">${{ product.price.toFixed(2) }}</div>
               </div>
             </div>
           </div>
@@ -162,11 +163,16 @@ onMounted(async () => {
         <div>
           <h3 class="text-base font-semibold tracking-wide mb-6 text-gray-900 uppercase">BEST REVIEWED</h3>
           <div class="space-y-4">
-            <div v-for="product in bestReviewed" :key="product._id" class="flex items-center gap-4 group cursor-pointer">
-              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-cover bg-center" :style="`background-image: url('${product.image || '/blog.png'}')`"></div>
+            <div 
+              v-for="product in bestReviewed" 
+              :key="product._id" 
+              @click="router.push('/products/' + product._id)"
+              class="flex items-center gap-4 group cursor-pointer"
+            >
+              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-contain bg-center bg-no-repeat mix-blend-multiply" :style="`background-image: url('${product.thumbnail || product.image || '/blog.png'}')`"></div>
               <div>
-                <h4 class="text-sm font-medium text-gray-800 group-hover:text-secondary transition-colors">{{ product.name }}</h4>
-                <div class="text-secondary text-sm font-semibold">${{ product.price }}</div>
+                <h4 class="text-sm font-bold text-gray-800 group-hover:text-secondary transition-colors line-clamp-1" :title="product.title || product.name">{{ product.title || product.name }}</h4>
+                <div class="text-secondary text-sm font-semibold">${{ product.price.toFixed(2) }}</div>
               </div>
             </div>
           </div>
@@ -176,13 +182,18 @@ onMounted(async () => {
         <div>
           <h3 class="text-base font-semibold tracking-wide mb-6 text-gray-900 uppercase">ON SALE</h3>
           <div class="space-y-4">
-            <div v-for="product in onSaleItems" :key="product._id" class="flex items-center gap-4 group cursor-pointer">
-              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-cover bg-center" :style="`background-image: url('${product.image || '/blog.png'}')`"></div>
+            <div 
+              v-for="product in onSaleItems" 
+              :key="product._id" 
+              @click="router.push('/products/' + product._id)"
+              class="flex items-center gap-4 group cursor-pointer"
+            >
+              <div class="w-16 h-16 bg-gray-50 rounded flex-shrink-0 bg-contain bg-center bg-no-repeat mix-blend-multiply" :style="`background-image: url('${product.thumbnail || product.image || '/blog.png'}')`"></div>
               <div>
-                <h4 class="text-sm font-medium text-gray-800 group-hover:text-secondary transition-colors">{{ product.name }}</h4>
+                <h4 class="text-sm font-bold text-gray-800 group-hover:text-secondary transition-colors line-clamp-1" :title="product.title || product.name">{{ product.title || product.name }}</h4>
                 <div class="flex gap-2">
-                  <span class="text-gray-400 line-through text-xs">${{ product.originalPrice }}</span>
-                  <span class="text-secondary text-sm font-semibold">${{ product.price }}</span>
+                  <span v-if="product.originalPrice" class="text-gray-400 line-through text-xs">${{ product.originalPrice.toFixed(2) }}</span>
+                  <span class="text-secondary text-sm font-semibold">${{ product.price.toFixed(2) }}</span>
                 </div>
               </div>
             </div>
@@ -195,13 +206,29 @@ onMounted(async () => {
     <!-- Customers Reviews Section -->
     <ReviewsSection />
 
-    <!-- Latest Posts Section -->
-    <LatestPostsSection />
+    <!-- Categories Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      <div class="flex items-center gap-5 mb-10">
+        <h2 class="text-xl font-medium tracking-wide whitespace-nowrap text-gray-900">CATEGORIES</h2>
+        <div class="h-2 flex-grow bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNlZWVlZWUiLz48L3N2Zz4=')] opacity-50"></div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 text-center">
+        <!-- Category items -->
+        <div 
+          v-for="category in categories" 
+          :key="category._id" 
+          @click="router.push({ path: '/shop', query: { category: category.name } })"
+          class="group cursor-pointer"
+        >
+          <div class="bg-gray-50 aspect-square rounded flex items-center justify-center mb-4 transition-transform group-hover:-translate-y-2 p-4">
+            <img :src="category.image || '/blog.png'" :alt="category.name" class="w-full h-full object-contain mix-blend-multiply opacity-80" />
+          </div>
+          <h4 class="text-sm font-medium text-gray-700 group-hover:text-secondary transition-colors">{{ category.name }}</h4>
+        </div>
+      </div>
+    </section>
 
     <!-- Brand Logos Section -->
     <BrandsSection />
-
-    <!-- Instagram Section -->
-    <InstagramSection />
   </div>
 </template>

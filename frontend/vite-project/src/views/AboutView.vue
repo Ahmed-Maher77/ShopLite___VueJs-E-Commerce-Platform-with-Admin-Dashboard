@@ -2,9 +2,7 @@
 import { ref, onMounted } from 'vue'
 import FeaturesSection from '../components/FeaturesSection.vue'
 import ReviewsSection from '../components/ReviewsSection.vue'
-import LatestPostsSection from '../components/LatestPostsSection.vue'
 import BrandsSection from '../components/BrandsSection.vue'
-import InstagramSection from '../components/InstagramSection.vue'
 
 const aboutData = ref<any>(null)
 const isVideoPlaying = ref(false)
@@ -54,13 +52,7 @@ onMounted(async () => {
     <!-- Customers Reviews Section -->
     <ReviewsSection />
 
-    <!-- Latest Posts Section -->
-    <LatestPostsSection />
-
     <!-- Brand Logos Section -->
     <BrandsSection />
-
-    <!-- Instagram Section -->
-    <InstagramSection />
   </div>
 </template>

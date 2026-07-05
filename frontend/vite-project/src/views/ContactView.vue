@@ -2,9 +2,7 @@
 import ContactDetails from '../components/ContactDetails.vue'
 import StoresSection from '../components/StoresSection.vue'
 import ReviewsSection from '../components/ReviewsSection.vue'
-import LatestPostsSection from '../components/LatestPostsSection.vue'
 import BrandsSection from '../components/BrandsSection.vue'
-import InstagramSection from '../components/InstagramSection.vue'
 </script>
 
 <template>
@@ -30,13 +28,7 @@ import InstagramSection from '../components/InstagramSection.vue'
     <!-- Customers Reviews Section -->
     <ReviewsSection />
 
-    <!-- Latest Blog Posts Section -->
-    <LatestPostsSection />
-
     <!-- Brand Logos Section -->
     <BrandsSection />
-
-    <!-- Instagram Feed Section -->
-    <InstagramSection />
   </div>
 </template>

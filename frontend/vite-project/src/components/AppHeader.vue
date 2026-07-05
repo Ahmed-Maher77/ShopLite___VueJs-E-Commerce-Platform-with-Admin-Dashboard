@@ -1,17 +1,35 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Menu, X } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { Menu, X, LogOut } from 'lucide-vue-next'
+import { useAuth } from '../composables/useAuth'
+import { useCart } from '../composables/useCart'
 
+const router = useRouter()
+const { isAuthenticated, isAdmin, logout, user } = useAuth()
+const { itemsCount } = useCart()
 const isMobileMenuOpen = ref(false)
+
+const handleLogout = () => {
+  logout()
+  router.push('/login')
+}
 </script>
 
 <template>
-  <div class="font-sans">
+  <div class="font-sans bg-white border-b border-gray-100">
     <!-- Top thin bar -->
-    <div class="border-b border-gray-200 text-xs text-gray-500 py-2">
+    <div class="border-b border-gray-100 text-xs text-gray-500 py-2 bg-gray-50">
       <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-2 sm:gap-0">
         <div>Need help? Call us: 1122334455</div>
-        <div>Summer sale discount off 50%! <a href="#" class="underline font-medium text-gray-800 hover:text-secondary">Shop Now</a></div>
+        <div>
+          <span v-if="isAuthenticated" class="font-semibold text-gray-700">
+            Welcome back, {{ user?.name }} ({{ user?.role }})!
+          </span>
+          <span v-else>
+            Summer sale discount off 50%! <router-link to="/shop" class="underline font-medium text-gray-800 hover:text-secondary">Shop Now</router-link>
+          </span>
+        </div>
         <div>2-3 business days delivery & free returns</div>
       </div>
     </div>
@@ -23,28 +41,73 @@ const isMobileMenuOpen = ref(false)
         <router-link to="/">SHOP<span class="font-light">LITE</span></router-link>
       </div>
 
-      <!-- Navigation for Large Screens (hidden on small and middle screens) -->
+      <!-- Navigation for Large Screens -->
       <nav class="hidden lg:block">
         <ul class="flex gap-8 text-sm font-medium tracking-wide">
-          <li><router-link to="/" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">HOME</router-link></li>
-          <li>
-            <router-link to="/about" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">ABOUT</router-link>
-          </li>
-          <li><router-link to="/shop" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">SHOP</router-link></li>
-          <li><a href="#" class="hover:text-secondary transition-colors">BLOGS</a></li>
-          <li><a href="#" class="hover:text-secondary transition-colors">PAGES+</a></li>
-          <li><router-link to="/contact" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">CONTACT</router-link></li>
+          <!-- Public Guest Navigation -->
+          <template v-if="!isAuthenticated">
+            <li><router-link to="/" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">HOME</router-link></li>
+            <li><router-link to="/about" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">ABOUT</router-link></li>
+            <li><router-link to="/shop" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">SHOP</router-link></li>
+            <li><router-link to="/contact" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">CONTACT</router-link></li>
+            <li><router-link to="/login" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">LOGIN</router-link></li>
+            <li><router-link to="/register" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">REGISTER</router-link></li>
+          </template>
+
+          <!-- Authenticated Regular User Navigation -->
+          <template v-else-if="isAuthenticated && !isAdmin">
+            <li><router-link to="/" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">HOME</router-link></li>
+            <li><router-link to="/shop" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">SHOP</router-link></li>
+            <li><router-link to="/cart" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">CART</router-link></li>
+            <li><router-link to="/profile" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">PROFILE</router-link></li>
+          </template>
+
+          <!-- Authenticated Admin Navigation -->
+          <template v-else-if="isAuthenticated && isAdmin">
+            <li><router-link to="/" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">HOME</router-link></li>
+            <li><router-link to="/shop" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">SHOP</router-link></li>
+            <li><router-link to="/admin" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">ADMIN DASHBOARD</router-link></li>
+            <li><router-link to="/profile" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">PROFILE</router-link></li>
+          </template>
         </ul>
       </nav>
 
       <!-- Right Actions -->
       <div class="flex items-center gap-5 text-gray-800">
-        <svg class="w-5 h-5 cursor-pointer hover:text-secondary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <svg class="w-5 h-5 cursor-pointer hover:text-secondary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        <svg class="w-5 h-5 cursor-pointer hover:text-secondary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-        <svg class="w-5 h-5 cursor-pointer hover:text-secondary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <!-- Search anchor / SVG -->
+        <router-link to="/shop" class="hover:text-secondary transition-colors" aria-label="Search">
+          <svg class="w-5 h-5 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </router-link>
+
+        <!-- Profile Link -->
+        <router-link :to="isAuthenticated ? '/profile' : '/login'" class="hover:text-secondary transition-colors" aria-label="Profile">
+          <svg class="w-5 h-5 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </router-link>
+
+        <!-- Favorites (Users only) -->
+        <router-link v-if="isAuthenticated && !isAdmin" to="/favorites" class="hover:text-secondary transition-colors text-gray-400 cursor-not-allowed" aria-label="Favorites">
+          <svg class="w-5 h-5 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </router-link>
+
+        <!-- Cart (Users only) -->
+        <router-link v-if="isAuthenticated && !isAdmin" to="/cart" class="hover:text-secondary transition-colors relative" aria-label="Shopping Cart">
+          <svg class="w-5 h-5 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          <span v-if="itemsCount > 0" class="absolute -top-2 -right-2 bg-secondary text-white text-[10px] font-bold rounded-full w-4.5 h-4.5 flex items-center justify-center border border-white">
+            {{ itemsCount }}
+          </span>
+        </router-link>
         
-        <!-- Burger menu icon (visible on small and middle screens, hidden on large screens) -->
+        <!-- Logout action (for authenticated users) -->
+        <button 
+          v-if="isAuthenticated" 
+          @click="handleLogout" 
+          class="hidden sm:flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-secondary transition-colors cursor-pointer uppercase bg-transparent border-0 outline-none"
+          title="Sign Out"
+        >
+          <LogOut class="w-4 h-4" /> <span class="hidden md:inline">Sign Out</span>
+        </button>
+
+        <!-- Burger menu icon (visible on mobile/tablet) -->
         <button 
           @click="isMobileMenuOpen = !isMobileMenuOpen" 
           class="lg:hidden p-1 text-gray-800 hover:text-secondary transition-colors focus:outline-none cursor-pointer"
@@ -70,12 +133,37 @@ const isMobileMenuOpen = ref(false)
         class="lg:hidden border-b border-gray-200 bg-white overflow-hidden"
       >
         <ul class="flex flex-col px-6 py-4 space-y-3 text-sm font-medium tracking-wide">
-          <li><router-link to="/" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">HOME</router-link></li>
-          <li><router-link to="/about" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">ABOUT</router-link></li>
-          <li><router-link to="/shop" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">SHOP</router-link></li>
-          <li><a href="#" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors">BLOGS</a></li>
-          <li><a href="#" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors">PAGES+</a></li>
-          <li><router-link to="/contact" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">CONTACT</router-link></li>
+          <!-- Mobile Guest Navigation -->
+          <template v-if="!isAuthenticated">
+            <li><router-link to="/" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">HOME</router-link></li>
+            <li><router-link to="/about" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">ABOUT</router-link></li>
+            <li><router-link to="/shop" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">SHOP</router-link></li>
+            <li><router-link to="/contact" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">CONTACT</router-link></li>
+            <li><router-link to="/login" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">LOGIN</router-link></li>
+            <li><router-link to="/register" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">REGISTER</router-link></li>
+          </template>
+
+          <!-- Mobile Regular User Navigation -->
+          <template v-else-if="isAuthenticated && !isAdmin">
+            <li><router-link to="/" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">HOME</router-link></li>
+            <li><router-link to="/shop" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">SHOP</router-link></li>
+            <li>
+              <router-link to="/cart" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">
+                CART <span v-if="itemsCount > 0">({{ itemsCount }})</span>
+              </router-link>
+            </li>
+            <li><router-link to="/profile" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">PROFILE</router-link></li>
+            <li><button @click="handleLogout(); isMobileMenuOpen = false" class="w-full text-left block py-1 text-gray-600 hover:text-secondary font-semibold uppercase">LOGOUT</button></li>
+          </template>
+
+          <!-- Mobile Admin Navigation -->
+          <template v-else-if="isAuthenticated && isAdmin">
+            <li><router-link to="/" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">HOME</router-link></li>
+            <li><router-link to="/shop" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">SHOP</router-link></li>
+            <li><router-link to="/admin" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">ADMIN DASHBOARD</router-link></li>
+            <li><router-link to="/profile" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">PROFILE</router-link></li>
+            <li><button @click="handleLogout(); isMobileMenuOpen = false" class="w-full text-left block py-1 text-gray-600 hover:text-secondary font-semibold uppercase">LOGOUT</button></li>
+          </template>
         </ul>
       </div>
     </transition>

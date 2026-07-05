@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:seed": "node src/seeders/main.js",
     "db:seed-users": "node src/seeders/usersSeeder.js",
-    "db:seed-products": "node src/seeders/productsSeeder.js"
+    "db:seed-products": "node src/seeders/productsSeeder.js",
+    "db:seed-test-users": "node src/seeders/testUsersSeeder.js"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +22,8 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.7.3"
+    "mongoose": "^9.7.3",
+    "pdfkit": "^0.19.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
