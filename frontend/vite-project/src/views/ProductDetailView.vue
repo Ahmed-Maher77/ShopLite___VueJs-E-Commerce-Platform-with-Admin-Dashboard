@@ -1,0 +1,394 @@
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { 
+  Star, 
+  ChevronLeft, 
+  ShieldCheck, 
+  Truck, 
+  Maximize2, 
+  ShoppingBag,
+  MessageSquare,
+  Calendar,
+  AlertTriangle
+} from 'lucide-vue-next'
+
+const route = useRoute()
+const router = useRouter()
+
+const product = ref<any>(null)
+const loading = ref(true)
+const errorMsg = ref('')
+
+// Image gallery state
+const activeImageIndex = ref(0)
+
+// Helper to get category name
+const getCategoryName = (cat: any) => {
+  if (!cat) return 'General'
+  if (typeof cat === 'object') return cat.name || 'General'
+  return cat
+}
+
+// Fetch single product details
+const fetchProductDetails = async () => {
+  loading.value = true
+  errorMsg.value = ''
+  try {
+    const id = route.params.id
+    const res = await fetch(`http://localhost:5000/api/products/${id}`)
+    
+    if (res.status === 404) {
+      errorMsg.value = 'Product not found'
+      return
+    }
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch product details')
+    }
+
+    product.value = await res.json()
+    activeImageIndex.value = 0
+  } catch (err: any) {
+    console.error('Error fetching product:', err)
+    errorMsg.value = err.message || 'Something went wrong'
+  } finally {
+    loading.value = false
+  }
+}
+
+
+// Format date
+const formatDate = (dateString: string) => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+// Product images list
+const productImages = computed(() => {
+  if (!product.value) return []
+  const list = []
+  if (product.value.thumbnail) list.push(product.value.thumbnail)
+  if (product.value.images && Array.isArray(product.value.images)) {
+    product.value.images.forEach((img: string) => {
+      if (img !== product.value.thumbnail) list.push(img)
+    })
+  }
+  if (list.length === 0 && product.value.image) list.push(product.value.image)
+  return list
+})
+
+onMounted(() => {
+  fetchProductDetails()
+})
+</script>
+
+<template>
+  <div class="bg-gray-50 min-h-screen pb-16 font-sans">
+    <!-- Breadcrumb section -->
+    <div class="bg-white border-b border-gray-100 py-4 mb-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div class="flex items-center text-xs text-gray-500 gap-1.5 uppercase font-medium tracking-wide">
+          <router-link to="/" class="hover:text-secondary transition-colors">Home</router-link>
+          <span>/</span>
+          <router-link to="/shop" class="hover:text-secondary transition-colors">Shop</router-link>
+          <span v-if="product">/</span>
+          <span v-if="product" class="text-gray-500 hover:text-secondary cursor-pointer" @click="router.push({ path: '/shop', query: { category: getCategoryName(product.category) } })">
+            {{ getCategoryName(product.category) }}
+          </span>
+          <span>/</span>
+          <span v-if="product" class="text-gray-900 font-semibold truncate max-w-[150px] sm:max-w-xs">{{ product.title }}</span>
+        </div>
+
+        <button 
+          @click="router.back()" 
+          class="flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-secondary transition-colors"
+        >
+          <ChevronLeft class="w-4 h-4" /> BACK
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN DETAIL WRAPPER -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- LOADING STATE -->
+      <div v-if="loading" class="bg-white border border-gray-100 rounded-lg p-6 sm:p-10 shadow-sm animate-pulse">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <!-- Image skeleton -->
+          <div class="flex flex-col gap-4">
+            <div class="aspect-square bg-gray-100 rounded-lg w-full"></div>
+            <div class="flex gap-3">
+              <div v-for="i in 4" :key="i" class="w-16 h-16 bg-gray-100 rounded"></div>
+            </div>
+          </div>
+          <!-- Info skeleton -->
+          <div class="flex flex-col gap-4">
+            <div class="h-3 bg-gray-100 rounded w-1/4"></div>
+            <div class="h-8 bg-gray-100 rounded w-3/4"></div>
+            <div class="h-4 bg-gray-100 rounded w-1/3"></div>
+            <div class="h-10 bg-gray-100 rounded w-1/2"></div>
+            <div class="h-20 bg-gray-100 rounded w-full"></div>
+            <div class="h-10 bg-gray-100 rounded w-1/3 mt-6"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ERROR STATE -->
+      <div 
+        v-else-if="errorMsg" 
+        class="bg-white border border-gray-100 rounded-lg p-16 text-center max-w-xl mx-auto shadow-sm"
+      >
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <AlertTriangle class="w-8 h-8" />
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Error Loading Product</h3>
+        <p class="text-gray-500 text-sm mb-8">{{ errorMsg }}</p>
+        <router-link 
+          to="/shop" 
+          class="bg-secondary text-white font-semibold text-sm py-3 px-8 rounded shadow hover:opacity-95 active:scale-95 transition-all inline-block"
+        >
+          Return to Shop
+        </router-link>
+      </div>
+
+      <!-- PRODUCT CONTENT -->
+      <div v-else-if="product">
+        <div class="bg-white border border-gray-100 rounded-lg p-6 sm:p-10 shadow-sm mb-10">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            <!-- Left Column: Interactive Image Gallery -->
+            <div class="flex flex-col">
+              <!-- Main Image Container -->
+              <div class="aspect-square bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-center overflow-hidden p-6 relative">
+                <img 
+                  :src="productImages[activeImageIndex]" 
+                  :alt="product.title" 
+                  class="max-w-full max-h-full object-contain mix-blend-multiply transition-transform duration-300 hover:scale-105"
+                />
+                <!-- Sale Badge -->
+                <span 
+                  v-if="product.isOnSale" 
+                  class="absolute top-4 left-4 bg-secondary text-white text-xs font-bold px-3 py-1 rounded shadow"
+                >
+                  -{{ Math.round(product.discountPercentage) }}% OFF
+                </span>
+              </div>
+
+              <!-- Thumbnails List -->
+              <div 
+                v-if="productImages.length > 1" 
+                class="flex gap-3 mt-4 overflow-x-auto pb-1"
+              >
+                <button 
+                  v-for="(img, idx) in productImages" 
+                  :key="idx"
+                  @click="activeImageIndex = idx"
+                  class="w-20 h-20 bg-gray-50 border rounded-md flex-shrink-0 flex items-center justify-center p-1.5 focus:outline-none transition-all"
+                  :class="activeImageIndex === idx ? 'border-secondary ring-1 ring-secondary' : 'border-gray-200 hover:border-gray-400'"
+                >
+                  <img :src="img" :alt="`${product.title} ${idx}`" class="max-w-full max-h-full object-contain mix-blend-multiply" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Column: Details & Actions -->
+            <div class="flex flex-col text-left">
+              <!-- Brand & Category -->
+              <div class="flex items-center gap-3 mb-3">
+                <span class="text-xs font-bold text-secondary uppercase tracking-wider bg-secondary/10 px-2.5 py-1 rounded">
+                  {{ getCategoryName(product.category) }}
+                </span>
+                <span v-if="product.brand" class="text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2.5 py-1 rounded">
+                  {{ product.brand }}
+                </span>
+              </div>
+
+              <!-- Title -->
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-3">
+                {{ product.title }}
+              </h1>
+
+              <!-- Ratings and SKU -->
+              <div class="flex flex-wrap items-center gap-4 border-b border-gray-100 pb-5 mb-5">
+                <div class="flex items-center gap-1.5">
+                  <div class="flex text-amber-400">
+                    <Star 
+                      v-for="n in 5" 
+                      :key="n" 
+                      class="w-4 h-4 fill-current" 
+                      :class="n <= Math.floor(product.rating || 0) ? 'fill-current' : 'text-gray-200 fill-current'" 
+                    />
+                  </div>
+                  <span class="text-sm font-semibold text-gray-800">{{ product.rating?.toFixed(1) || '0.0' }}</span>
+                  <span class="text-xs text-gray-400">|</span>
+                  <span class="text-xs text-gray-500 font-semibold">{{ product.reviews?.length || 0 }} Reviews</span>
+                </div>
+                
+                <span v-if="product.sku" class="text-xs text-gray-400 font-medium">
+                  SKU: <span class="text-gray-600 font-bold font-mono">{{ product.sku }}</span>
+                </span>
+              </div>
+
+              <!-- Price Section -->
+              <div class="mb-6 bg-gray-50 p-4 rounded-lg flex items-center justify-between border border-gray-100">
+                <div>
+                  <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Special Price</div>
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold text-secondary">
+                      ${{ product.price.toFixed(2) }}
+                    </span>
+                    <span 
+                      v-if="product.isOnSale && product.originalPrice" 
+                      class="text-base text-gray-400 line-through font-medium"
+                    >
+                      ${{ product.originalPrice.toFixed(2) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Stock badge -->
+                <div class="text-right">
+                  <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Availability</div>
+                  <span 
+                    v-if="product.stock === 0" 
+                    class="bg-red-50 text-red-600 text-xs font-bold px-3 py-1.5 rounded-full border border-red-100"
+                  >
+                    Out Of Stock
+                  </span>
+                  <span 
+                    v-else-if="product.stock <= 5" 
+                    class="bg-amber-50 text-amber-600 text-xs font-bold px-3 py-1.5 rounded-full border border-amber-100"
+                  >
+                    Low Stock: Only {{ product.stock }} Left
+                  </span>
+                  <span 
+                    v-else 
+                    class="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-100"
+                  >
+                    In Stock ({{ product.stock }})
+                  </span>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-6">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Description</h3>
+                <p class="text-sm text-gray-600 leading-relaxed font-normal">
+                  {{ product.description }}
+                </p>
+              </div>
+
+              <!-- Specifications Grid -->
+              <div class="grid grid-cols-2 gap-y-4 gap-x-6 mb-8 text-sm border-t border-b border-gray-100 py-6">
+                <div v-if="product.shippingInformation" class="flex items-center gap-2.5">
+                  <Truck class="w-4 h-4 text-gray-400 shrink-0" />
+                  <div>
+                    <span class="text-xs text-gray-400 block font-medium">Shipping</span>
+                    <span class="text-xs text-gray-700 font-semibold">{{ product.shippingInformation }}</span>
+                  </div>
+                </div>
+
+                <div v-if="product.warrantyInformation" class="flex items-center gap-2.5">
+                  <ShieldCheck class="w-4 h-4 text-gray-400 shrink-0" />
+                  <div>
+                    <span class="text-xs text-gray-400 block font-medium">Warranty</span>
+                    <span class="text-xs text-gray-700 font-semibold">{{ product.warrantyInformation }}</span>
+                  </div>
+                </div>
+
+                <div v-if="product.dimensions && (product.dimensions.width || product.dimensions.height)" class="flex items-center gap-2.5 col-span-2 sm:col-span-1">
+                  <Maximize2 class="w-4 h-4 text-gray-400 shrink-0" />
+                  <div>
+                    <span class="text-xs text-gray-400 block font-medium">Dimensions (W x H x D)</span>
+                    <span class="text-xs text-gray-700 font-semibold">
+                      {{ product.dimensions.width }} x {{ product.dimensions.height }} x {{ product.dimensions.depth }} cm
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tags pills -->
+              <div v-if="product.tags && product.tags.length > 0" class="mb-8 flex flex-wrap gap-1.5 items-center">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">Tags:</span>
+                <span 
+                  v-for="tag in product.tags" 
+                  :key="tag"
+                  class="bg-gray-100 hover:bg-secondary/10 hover:text-secondary text-gray-600 text-xs px-2.5 py-1 rounded transition-colors cursor-pointer"
+                  @click="router.push({ path: '/shop', query: { search: tag } })"
+                >
+                  #{{ tag }}
+                </span>
+              </div>
+
+              <!-- Quick Action Button -->
+              <div>
+                <button 
+                  class="w-full sm:w-auto bg-secondary text-white font-bold text-sm tracking-wide py-4 px-10 rounded shadow-md hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 uppercase cursor-pointer"
+                  :disabled="product.stock === 0"
+                  :class="product.stock === 0 ? 'opacity-50 cursor-not-allowed bg-gray-500' : ''"
+                >
+                  <ShoppingBag class="w-4 h-4" /> Add to Cart
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- REVIEWS SECTION -->
+        <div class="bg-white border border-gray-100 rounded-lg p-6 sm:p-10 shadow-sm text-left">
+          <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-6 flex items-center gap-2">
+            <MessageSquare class="w-5 h-5 text-gray-400" /> CUSTOMER REVIEWS ({{ product.reviews?.length || 0 }})
+          </h2>
+
+          <div v-if="!product.reviews || product.reviews.length === 0" class="text-center py-10">
+            <p class="text-gray-500 text-sm">No reviews yet for this product. Be the first to leave one!</p>
+          </div>
+
+          <div v-else class="space-y-6 divide-y divide-gray-100">
+            <div 
+              v-for="(rev, idx) in product.reviews" 
+              :key="idx"
+              class="pt-6 first:pt-0 flex flex-col gap-2"
+            >
+              <div class="flex justify-between items-start gap-4">
+                <div>
+                  <h4 class="font-semibold text-gray-800 text-sm">{{ rev.reviewerName }}</h4>
+                  <div class="flex items-center gap-1.5 text-xs text-gray-400 mt-0.5">
+                    <span class="font-mono">{{ rev.reviewerEmail }}</span>
+                    <span>&bull;</span>
+                    <span class="flex items-center gap-1">
+                      <Calendar class="w-3 h-3" /> {{ formatDate(rev.date) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Review Rating Stars -->
+                <div class="flex text-amber-400 shrink-0">
+                  <Star 
+                    v-for="n in 5" 
+                    :key="n" 
+                    class="w-3.5 h-3.5 fill-current" 
+                    :class="n <= rev.rating ? 'fill-current' : 'text-gray-200 fill-current'" 
+                  />
+                </div>
+              </div>
+
+              <p class="text-gray-600 text-sm leading-relaxed mt-1 font-normal bg-gray-50/50 p-3 rounded-lg border border-gray-50/30">
+                {{ rev.comment }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</template>

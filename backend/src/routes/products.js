@@ -1,37 +1,23 @@
 const express = require('express');
-const Product = require('../models/Product');
+const ProductController = require('../controllers/ProductController');
 const router = express.Router();
 
-// GET products for Home page sections (Best Selling, Featured, Latest, On Sale)
-router.get('/', async (req, res) => {
-  try {
-    let query = {};
+// GET products (supports search, pagination, combined filtering, sorting)
+router.get('/', ProductController.getProducts);
 
-    // Filter by Featured, OnSale
-    if (req.query.isFeatured) query.isFeatured = req.query.isFeatured === 'true';
-    if (req.query.isOnSale) query.isOnSale = req.query.isOnSale === 'true';
+// GET distinct brands list (for filtering sidebar)
+router.get('/brands', ProductController.getDistinctBrands);
 
-    let mongooseQuery = Product.find(query);
+// GET product by ID
+router.get('/:id', ProductController.getProductById);
 
-    // Sorting
-    if (req.query.sort) {
-      if (req.query.sort === '-sales') {
-        mongooseQuery = mongooseQuery.sort({ sales: -1 }); // Best selling
-      } else if (req.query.sort === '-createdAt') {
-        mongooseQuery = mongooseQuery.sort({ createdAt: -1 }); // Latest
-      }
-    }
+// POST create product (Admin feature prep)
+router.post('/', ProductController.createProduct);
 
-    // Limit (e.g. 3 for columns, 4 for best selling)
-    if (req.query.limit) {
-      mongooseQuery = mongooseQuery.limit(Number(req.query.limit));
-    }
+// PUT update product by ID (Admin feature prep)
+router.put('/:id', ProductController.updateProduct);
 
-    const products = await mongooseQuery;
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
-  }
-});
+// DELETE product by ID (Admin feature prep)
+router.delete('/:id', ProductController.deleteProduct);
 
 module.exports = router;

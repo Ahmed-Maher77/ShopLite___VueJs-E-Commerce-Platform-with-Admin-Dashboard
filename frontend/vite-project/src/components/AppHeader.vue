@@ -30,7 +30,7 @@ const isMobileMenuOpen = ref(false)
           <li>
             <router-link to="/about" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">ABOUT</router-link>
           </li>
-          <li><a href="#" class="hover:text-secondary transition-colors">SHOP</a></li>
+          <li><router-link to="/shop" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">SHOP</router-link></li>
           <li><a href="#" class="hover:text-secondary transition-colors">BLOGS</a></li>
           <li><a href="#" class="hover:text-secondary transition-colors">PAGES+</a></li>
           <li><router-link to="/contact" class="hover:text-secondary transition-colors" exact-active-class="text-secondary border-b-2 border-secondary pb-1">CONTACT</router-link></li>
@@ -72,7 +72,7 @@ const isMobileMenuOpen = ref(false)
         <ul class="flex flex-col px-6 py-4 space-y-3 text-sm font-medium tracking-wide">
           <li><router-link to="/" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">HOME</router-link></li>
           <li><router-link to="/about" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">ABOUT</router-link></li>
-          <li><a href="#" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors">SHOP</a></li>
+          <li><router-link to="/shop" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">SHOP</router-link></li>
           <li><a href="#" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors">BLOGS</a></li>
           <li><a href="#" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors">PAGES+</a></li>
           <li><router-link to="/contact" @click="isMobileMenuOpen = false" class="block py-1 hover:text-secondary transition-colors" exact-active-class="text-secondary font-semibold">CONTACT</router-link></li>

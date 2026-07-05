@@ -6,6 +6,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
@@ -13,6 +17,22 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
+    },
+    discountPercentage: {
+      type: Number,
+      default: 0,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    stock: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    brand: {
+      type: String,
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -22,15 +42,53 @@ const productSchema = new mongoose.Schema(
     seller: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      // required: true, // commented out for easy mocking initially
     },
     image: {
       type: String,
     },
-    stock: {
-      type: Number,
-      required: true,
-      default: 0,
+    thumbnail: {
+      type: String,
+    },
+    images: {
+      type: [String],
+      default: [],
+    },
+    availabilityStatus: {
+      type: String,
+      default: 'In Stock',
+    },
+    sku: {
+      type: String,
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    dimensions: {
+      width: { type: Number },
+      height: { type: Number },
+      depth: { type: Number },
+    },
+    shippingInformation: {
+      type: String,
+    },
+    warrantyInformation: {
+      type: String,
+    },
+    reviews: [
+      {
+        rating: { type: Number },
+        comment: { type: String },
+        date: { type: Date },
+        reviewerName: { type: String },
+        reviewerEmail: { type: String },
+      },
+    ],
+    meta: {
+      createdAt: { type: Date },
+      updatedAt: { type: Date },
+      barcode: { type: String },
+      qrCode: { type: String },
     },
     sales: {
       type: Number,
@@ -45,13 +103,16 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
     originalPrice: {
-      type: Number, // Only if isOnSale is true
-    }
+      type: Number,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Add index for search queries
+productSchema.index({ title: 'text', brand: 'text', description: 'text' });
 
 const Product = mongoose.model('Product', productSchema);
 module.exports = Product;
