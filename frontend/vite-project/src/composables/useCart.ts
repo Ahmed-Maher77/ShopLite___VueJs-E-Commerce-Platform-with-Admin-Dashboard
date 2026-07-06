@@ -1,5 +1,6 @@
 import { ref, computed, watch } from 'vue'
 import { useAuth } from './useAuth'
+import { API_BASE_URL } from '../config'
 
 export interface CartItem {
   product: {
@@ -161,7 +162,7 @@ export function useCart() {
     if (!token.value) throw new Error('Authentication required')
     checkoutError.value = ''
     try {
-      const res = await fetch('http://localhost:5000/api/coupons/validate', {
+      const res = await fetch(`${API_BASE_URL}/api/coupons/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -209,7 +210,7 @@ export function useCart() {
         quantity: item.quantity
       }))
 
-      const res = await fetch('http://localhost:5000/api/orders', {
+      const res = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

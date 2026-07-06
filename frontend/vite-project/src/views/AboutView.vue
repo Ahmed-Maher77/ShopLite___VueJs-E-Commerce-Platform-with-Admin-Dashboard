@@ -3,13 +3,14 @@ import { ref, onMounted } from 'vue'
 import FeaturesSection from '../components/FeaturesSection.vue'
 import ReviewsSection from '../components/ReviewsSection.vue'
 import BrandsSection from '../components/BrandsSection.vue'
+import { API_BASE_URL } from '../config'
 
 const aboutData = ref<any>(null)
 const isVideoPlaying = ref(false)
 
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/about')
+    const res = await fetch(`${API_BASE_URL}/api/about`)
     aboutData.value = await res.json()
   } catch (error) {
     console.error('Error fetching about data:', error)

@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { API_BASE_URL } from '../config'
 
 export interface User {
   _id: string
@@ -37,7 +38,7 @@ export function useAuth() {
    * Log in user using email and password
    */
   const login = async (email: string, password: string) => {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -57,7 +58,7 @@ export function useAuth() {
    * Register a new user
    */
   const register = async (userData: any) => {
-    const res = await fetch('http://localhost:5000/api/auth/register', {
+    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData)
@@ -91,7 +92,7 @@ export function useAuth() {
 
     isRestoring.value = true
     try {
-      const res = await fetch('http://localhost:5000/api/auth/me', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
         headers: {
           'Authorization': `Bearer ${storedToken}`
         }
@@ -119,7 +120,7 @@ export function useAuth() {
   const updateProfile = async (profileData: any) => {
     if (!token.value) throw new Error('Not authenticated')
 
-    const res = await fetch('http://localhost:5000/api/auth/me', {
+    const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

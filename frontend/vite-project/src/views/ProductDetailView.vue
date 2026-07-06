@@ -12,6 +12,7 @@ import {
   Calendar,
   AlertTriangle
 } from 'lucide-vue-next'
+import { API_BASE_URL } from '../config'
 
 const route = useRoute()
 const router = useRouter()
@@ -61,7 +62,7 @@ const fetchProductDetails = async () => {
   errorMsg.value = ''
   try {
     const id = route.params.id
-    const res = await fetch(`http://localhost:5000/api/products/${id}`)
+    const res = await fetch(`${API_BASE_URL}/api/products/${id}`)
     
     if (res.status === 404) {
       errorMsg.value = 'Product not found'
@@ -130,7 +131,7 @@ const handleSubmitReview = async () => {
 
   reviewLoading.value = true
   try {
-    const res = await fetch(`http://localhost:5000/api/products/${product.value._id}/reviews`, {
+    const res = await fetch(`${API_BASE_URL}/api/products/${product.value._id}/reviews`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

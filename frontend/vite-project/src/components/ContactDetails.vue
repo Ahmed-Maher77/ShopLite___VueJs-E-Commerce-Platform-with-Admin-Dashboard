@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { API_BASE_URL } from '../config'
 
 // Define the reactive form state
 const form = ref({
@@ -24,7 +25,7 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const res = await fetch('http://localhost:5000/api/contact', {
+    const res = await fetch(`${API_BASE_URL}/api/contact`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
