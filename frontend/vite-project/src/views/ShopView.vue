@@ -12,6 +12,7 @@ import {
   Filter
 } from 'lucide-vue-next'
 import ProductCard from '../components/ProductCard.vue'
+import { API_BASE_URL } from '../config'
 
 const route = useRoute()
 const router = useRouter()
@@ -68,7 +69,7 @@ const stockOptions = [
 // Fetch categories
 const fetchCategories = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/categories')
+    const res = await fetch(`${API_BASE_URL}/api/categories`)
     categories.value = await res.json()
   } catch (err) {
     console.error('Error fetching categories:', err)
@@ -78,7 +79,7 @@ const fetchCategories = async () => {
 // Fetch brands
 const fetchBrands = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/products/brands')
+    const res = await fetch(`${API_BASE_URL}/api/products/brands`)
     brands.value = await res.json()
   } catch (err) {
     console.error('Error fetching brands:', err)
@@ -103,7 +104,7 @@ const fetchProducts = async () => {
     params.append('page', String(pagination.page))
     params.append('limit', String(pagination.limit))
 
-    const res = await fetch(`http://localhost:5000/api/products?${params.toString()}`)
+    const res = await fetch(`${API_BASE_URL}/api/products?${params.toString()}`)
     const data = await res.json()
     
     products.value = data.products

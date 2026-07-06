@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { API_BASE_URL } from '../config'
 
 const reviews = ref<any[]>([])
 
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/reviews')
+    const res = await fetch(`${API_BASE_URL}/api/reviews`)
     reviews.value = await res.json()
   } catch (error) {
     console.error('Error fetching reviews:', error)

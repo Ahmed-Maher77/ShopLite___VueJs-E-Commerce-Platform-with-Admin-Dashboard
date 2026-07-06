@@ -19,6 +19,7 @@ import {
   X,
   Loader2
 } from 'lucide-vue-next'
+import { API_BASE_URL } from '../config'
 
 const { user, token } = useAuth()
 
@@ -54,7 +55,7 @@ const productPages = ref(1)
 const fetchStats = async () => {
   statsLoading.value = true
   try {
-    const res = await fetch('http://localhost:5000/api/users/stats', {
+    const res = await fetch(`${API_BASE_URL}/api/users/stats`, {
       headers: { 'Authorization': `Bearer ${token.value}` }
     })
     if (res.ok) {
@@ -74,7 +75,7 @@ const fetchStats = async () => {
 // FETCH PRODUCTS
 const fetchProducts = async () => {
   try {
-    let url = `http://localhost:5000/api/products?page=${productPage.value}&limit=8`
+    let url = `${API_BASE_URL}/api/products?page=${productPage.value}&limit=8`
     if (productSearch.value) url += `&search=${encodeURIComponent(productSearch.value)}`
     if (selectedProductCategory.value) url += `&category=${encodeURIComponent(selectedProductCategory.value)}`
     
@@ -92,7 +93,7 @@ const fetchProducts = async () => {
 // FETCH USERS
 const fetchUsers = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/users', {
+    const res = await fetch(`${API_BASE_URL}/api/users`, {
       headers: { 'Authorization': `Bearer ${token.value}` }
     })
     if (res.ok) {
@@ -106,7 +107,7 @@ const fetchUsers = async () => {
 // FETCH CATEGORIES
 const fetchCategories = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/categories')
+    const res = await fetch(`${API_BASE_URL}/api/categories`)
     if (res.ok) {
       categoriesList.value = await res.json()
     }
@@ -118,7 +119,7 @@ const fetchCategories = async () => {
 // FETCH ORDERS
 const fetchOrders = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/orders', {
+    const res = await fetch(`${API_BASE_URL}/api/orders`, {
       headers: { 'Authorization': `Bearer ${token.value}` }
     })
     if (res.ok) {
@@ -132,7 +133,7 @@ const fetchOrders = async () => {
 // FETCH COUPONS
 const fetchCoupons = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/coupons', {
+    const res = await fetch(`${API_BASE_URL}/api/coupons`, {
       headers: { 'Authorization': `Bearer ${token.value}` }
     })
     if (res.ok) {
@@ -225,8 +226,8 @@ const handleSaveProduct = async () => {
   try {
     const method = isEditing.value ? 'PUT' : 'POST'
     const url = isEditing.value 
-      ? `http://localhost:5000/api/products/${productForm._id}`
-      : 'http://localhost:5000/api/products'
+      ? `${API_BASE_URL}/api/products/${productForm._id}`
+      : `${API_BASE_URL}/api/products`
 
     const res = await fetch(url, {
       method,
@@ -255,7 +256,7 @@ const handleSaveProduct = async () => {
 const handleDeleteProduct = async (id: string) => {
   if (!confirm('Are you sure you want to delete this product?')) return
   try {
-    const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token.value}` }
     })
@@ -299,8 +300,8 @@ const handleSaveCategory = async () => {
   try {
     const method = isEditing.value ? 'PUT' : 'POST'
     const url = isEditing.value 
-      ? `http://localhost:5000/api/categories/${categoryForm._id}`
-      : 'http://localhost:5000/api/categories'
+      ? `${API_BASE_URL}/api/categories/${categoryForm._id}`
+      : `${API_BASE_URL}/api/categories`
 
     const res = await fetch(url, {
       method,
@@ -328,7 +329,7 @@ const handleSaveCategory = async () => {
 const handleDeleteCategory = async (id: string) => {
   if (!confirm('Are you sure you want to delete this category?')) return
   try {
-    const res = await fetch(`http://localhost:5000/api/categories/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token.value}` }
     })
@@ -343,7 +344,7 @@ const handleDeleteCategory = async (id: string) => {
 // User Actions
 const handleToggleRestrictUser = async (userObj: any) => {
   try {
-    const res = await fetch(`http://localhost:5000/api/users/${userObj._id}/status`, {
+    const res = await fetch(`${API_BASE_URL}/api/users/${userObj._id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -362,7 +363,7 @@ const handleToggleRestrictUser = async (userObj: any) => {
 
 const handleToggleApproveUser = async (userObj: any) => {
   try {
-    const res = await fetch(`http://localhost:5000/api/users/${userObj._id}/status`, {
+    const res = await fetch(`${API_BASE_URL}/api/users/${userObj._id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -380,7 +381,7 @@ const handleToggleApproveUser = async (userObj: any) => {
 
 const handleChangeUserRole = async (userId: string, newRole: string) => {
   try {
-    const res = await fetch(`http://localhost:5000/api/users/${userId}/role`, {
+    const res = await fetch(`${API_BASE_URL}/api/users/${userId}/role`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -399,7 +400,7 @@ const handleChangeUserRole = async (userId: string, newRole: string) => {
 const handleDeleteUser = async (id: string) => {
   if (!confirm('Are you sure you want to restrict/delete this user account?')) return
   try {
-    const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token.value}` }
     })
@@ -415,7 +416,7 @@ const handleDeleteUser = async (id: string) => {
 // Order Actions
 const handleUpdateOrderStatus = async (orderId: string, status: string) => {
   try {
-    const res = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+    const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -443,7 +444,7 @@ const couponForm = reactive({
 const handleCreateCoupon = async () => {
   actionLoading.value = true
   try {
-    const res = await fetch('http://localhost:5000/api/coupons', {
+    const res = await fetch(`${API_BASE_URL}/api/coupons`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -478,7 +479,7 @@ const handleCreateCoupon = async () => {
 const handleDeleteCoupon = async (id: string) => {
   if (!confirm('Are you sure you want to delete this coupon?')) return
   try {
-    const res = await fetch(`http://localhost:5000/api/coupons/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/coupons/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token.value}` }
     })

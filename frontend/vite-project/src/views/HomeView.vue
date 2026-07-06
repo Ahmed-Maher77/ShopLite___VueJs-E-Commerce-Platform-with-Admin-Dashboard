@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import FeaturesSection from '../components/FeaturesSection.vue'
 import ReviewsSection from '../components/ReviewsSection.vue'
 import BrandsSection from '../components/BrandsSection.vue'
+import { API_BASE_URL } from '../config'
 
 const router = useRouter()
 
@@ -16,7 +17,7 @@ const onSaleItems = ref<any[]>([])
 
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/home')
+    const res = await fetch(`${API_BASE_URL}/api/home`)
     const data = await res.json()
     
     categories.value = data.categories

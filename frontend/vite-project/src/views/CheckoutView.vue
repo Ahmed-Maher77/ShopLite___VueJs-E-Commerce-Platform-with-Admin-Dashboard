@@ -13,6 +13,7 @@ import ReviewsSection from '../components/ReviewsSection.vue'
 import LatestPostsSection from '../components/LatestPostsSection.vue'
 import BrandsSection from '../components/BrandsSection.vue'
 import InstagramSection from '../components/InstagramSection.vue'
+import { API_BASE_URL } from '../config'
 
 const router = useRouter()
 const { user } = useAuth()
@@ -79,7 +80,7 @@ function prefillForm() {
 
 const fetchStripeKey = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/config/stripe-key')
+    const res = await fetch(`${API_BASE_URL}/api/config/stripe-key`)
     if (res.ok) {
       const data = await res.json()
       stripePublishableKey.value = data.publishableKey
