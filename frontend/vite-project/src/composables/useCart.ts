@@ -71,8 +71,47 @@ export function useCart() {
     checkoutError.value = ''
   }
 
-  // Watch for user changes to reload the correct cart
-  watch(user, () => {
+  // Watch for user changes to reload/merge the correct cart
+  watch(user, (newUser, oldUser) => {
+    // If transitioning from guest (null/undefined) to authenticated user
+    if (newUser && !oldUser) {
+      const guestCartKey = 'cart_guest'
+      const guestStored = localStorage.getItem(guestCartKey)
+      
+      if (guestStored) {
+        try {
+          const guestItems = JSON.parse(guestStored)
+          if (Array.isArray(guestItems) && guestItems.length > 0) {
+            const userCartKey = `cart_${newUser.email}`
+            const userStored = localStorage.getItem(userCartKey)
+            let userItems = []
+            if (userStored) {
+              try {
+                userItems = JSON.parse(userStored)
+              } catch (e) {}
+            }
+
+            // Merge guest items into user items
+            guestItems.forEach((gItem: any) => {
+              const existingIndex = userItems.findIndex((uItem: any) => uItem.product._id === gItem.product._id)
+              if (existingIndex > -1) {
+                // Combine quantities, capped at product stock
+                const combinedQty = userItems[existingIndex].quantity + gItem.quantity
+                userItems[existingIndex].quantity = Math.min(combinedQty, gItem.product.stock)
+              } else {
+                userItems.push(gItem)
+              }
+            })
+
+            localStorage.setItem(userCartKey, JSON.stringify(userItems))
+            localStorage.removeItem(guestCartKey)
+          }
+        } catch (e) {
+          console.error('Error merging guest cart:', e)
+        }
+      }
+    }
+
     loadCart()
     resetCheckout()
   }, { immediate: true })
