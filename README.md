@@ -4,6 +4,17 @@ ShopLite is a modern, responsive, full-stack e-commerce application. It features
 
 ---
 
+🌐**Demo (Live Preview):** <a href="https://vue-js-e-commerce-iti.vercel.app/" target="_blank">https://vue-js-e-commerce-iti.vercel.app</a> 
+
+---
+
+## 👀 Website Preview:
+<a href="https://vue-js-e-commerce-iti.vercel.app/" title="demo">
+  <img src="https://github.com/user-attachments/assets/8d581b07-672c-439c-b1c4-74be52a38754" alt="website preview - Demo - UI Mockup" width="400">
+</a>
+
+---
+
 ## 🚀 Key Features
 
 * **Role-Based Authentication & Profiles**: Secure registration and login using JSON Web Tokens (JWT) with distinct roles: `Customer`, `Seller`, and `Admin`.
