@@ -1,6 +1,10 @@
 # ShopLite E-Commerce Platform
 
+A production-inspired full-stack e-commerce platform featuring secure authentication, role-based access for customers, sellers, and administrators, advanced product discovery, persistent shopping cart, customer reviews, coupon engine, and Stripe payment processing. The platform includes a comprehensive administrative dashboard with analytics, enabling efficient management of users, products, categories, orders, discounts, and overall store operations through a centralized interface.
+
+<!--
 ShopLite is a modern, responsive, full-stack e-commerce application. It features a frontend built with **Vue 3 (Composition API)**, **TypeScript**, **Vite**, and **TailwindCSS**, paired with a robust and modular backend powered by **Node.js**, **Express.js**, **MongoDB (Mongoose)**, and **Stripe** for payment processing.
+-->
 
 ---
 
