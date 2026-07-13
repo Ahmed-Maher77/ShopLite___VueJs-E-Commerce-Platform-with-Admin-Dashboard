@@ -6,6 +6,10 @@ ShopLite is a modern, responsive, full-stack e-commerce application. It features
 
 🌐**Demo (Live Preview):** <a href="https://vue-js-e-commerce-iti.vercel.app/" target="_blank">https://vue-js-e-commerce-iti.vercel.app</a> 
 
+**🎥 Watch Video on LinkedIn:** [Click Here 🔗]()
+
+**📕 Presentation:** [Click Here 🔗](https://drive.google.com/file/d/12vYHfoqwx0kd4nwf5pEtsuyAjAVycfHw/view?usp=sharing)
+
 ---
 
 ## 👀 Website Preview:
